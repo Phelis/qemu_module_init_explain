@@ -7,7 +7,6 @@
 #define module_init(function, type) \
 static void __attribute__((constructor)) do_qemu_init_ ## function(void)		\
 {																				\
-	printf("註冊 do_qemu_init_vmxnet3_register_types\n");						\
 	register_module_init(function, type);										\
 }
 
