@@ -34,7 +34,7 @@ static void vmxnet3_class_init(ObjectClass *class, void *data)
 static const TypeInfo vmxnet3_info = {
     .name          = TYPE_VMXNET3,
     .parent        = TYPE_PCI_DEVICE,
-//    .instance_size = sizeof(VMXNET3State),
+    .instance_size = sizeof(VMXNET3State),
     .class_init    = vmxnet3_class_init,
     .instance_init = vmxnet3_instance_init,
 };
@@ -43,7 +43,6 @@ static void vmxnet3_register_types(void)
 {
     printf("vmxnet3_register_types\n");
 	
-//	type_register_static(&vmxnet3_info);
 	// 註冊 typeinfo 名稱 vmxnet3_info 到系統內
     type_register_static(&vmxnet3_info);
 }

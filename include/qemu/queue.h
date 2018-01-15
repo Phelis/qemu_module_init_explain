@@ -82,6 +82,11 @@ struct {                                                                	\
 // 初始化一個 entry，設定 data type
 #define QTAILQ_ENTRY(type)       Q_TAILQ_ENTRY(struct type,)
 
+#define QTAILQ_INIT(head) do {                                          \
+		(head)->tqh_first = NULL;                                       \
+		(head)->tqh_last = &(head)->tqh_first;                          \
+} while (/*CONSTCOND*/0)
+
 
 /**
  * head 的 last 為 elm 的 next field structure, 不用麻煩的 head -> last -> next = elm 而是把 elm 的 next address 直接給 head last
