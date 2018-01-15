@@ -1,4 +1,8 @@
 
+
+// 暫時先把 glib.h 放在此，以便編譯的方式可以通過
+#include <glib.h>
+
 /*
  * 在 qeum 的 queue.h 檔案內，定義了兩個形態 (linked-List 和 Queue)
  *

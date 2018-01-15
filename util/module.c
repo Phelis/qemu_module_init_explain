@@ -4,11 +4,6 @@
 // 初始化裝置 function pointer
 void (*init)(void);
 
-static void vmxnet3_register_types(void)
-{
-	printf("vmxnet3_register_types\n");
-}
-
 // 裝置模組註冊的
 void register_module_init(void (*fn)(void), module_init_type type)
 {
@@ -27,6 +22,3 @@ void module_call_init(module_init_type type)
 	init();
 }
 
-
-// 註冊 vmxnet3 網路卡，經由 macro 去替換成 C function
-type_init(vmxnet3_register_types);
