@@ -1,3 +1,4 @@
+
 // 如果有別的地方也定義相同的名稱，系統就不要使用這個 module.h ，定義的名稱為 qemu_module.h
 #ifndef QEMU_MODULE_H
 #define QEMU_MODULE_H

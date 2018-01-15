@@ -1,16 +1,31 @@
 #ifndef QEMU_OBJECT_H
 #define QEMU_OBJECT_H
 
+#include <inttypes.h>
 
 // object 採用 queue.h 內的機制去做收尋
 #include "../qemu/queue.h"
 
+typedef int bool; // or #define bool int
+
+
 struct TypeImpl;
 typedef struct TypeImpl *Type;
 
+typedef struct ObjectClass ObjectClass;
+
+typedef struct Object Object;
+
 typedef struct TypeInfo TypeInfo;
+typedef struct InterfaceInfo InterfaceInfo;
+
 
 #define OBJECT_CLASS_CAST_CACHE 4
+
+
+//typedef void (ObjectUnparent)(Object *obj);
+//
+//typedef void (ObjectFree)(void *obj);
 
 struct ObjectClass
 {
@@ -21,8 +36,8 @@ struct ObjectClass
     const char *object_cast_cache[OBJECT_CLASS_CAST_CACHE];
     const char *class_cast_cache[OBJECT_CLASS_CAST_CACHE];
     
-    ObjectUnparent *unparent;
-    
+//    ObjectUnparent *unparent;
+	
     GHashTable *properties;
 };
 
@@ -30,11 +45,12 @@ struct Object
 {
     /*< private >*/
     ObjectClass *class;
-    ObjectFree *free;
+//    ObjectFree *free;
     GHashTable *properties;
     uint32_t ref;
     Object *parent;
 };
+
 
 struct TypeInfo {
     // 裝置名稱
@@ -60,3 +76,13 @@ struct TypeInfo {
     InterfaceInfo *interfaces;
 };
 
+struct InterfaceInfo {
+	const char *type;
+};
+
+Type type_register(const TypeInfo *info);
+
+Type type_register_static(const TypeInfo *info);
+
+
+#endif

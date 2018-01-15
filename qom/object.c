@@ -1,7 +1,17 @@
-
+#include "../include/qom/object.h"
+#include <stdlib.h>
 
 // 對於一個 type 最多可以有 32 個介面(interface) 可以繼承和實作
 #define MAX_INTERFACES 32
+
+typedef struct InterfaceImpl InterfaceImpl;
+typedef struct TypeImpl TypeImpl;
+
+
+struct InterfaceImpl
+{
+	const char *typename;
+};
 
 // 用於實作 typeinfo 使用
 struct TypeImpl
@@ -41,25 +51,26 @@ static TypeImpl *type_new(const TypeInfo *info) {
     return ti;
 }
 
-
-
 static TypeImpl *type_register_internal(const TypeInfo *info)
 {
     TypeImpl *ti;
     // 會把 typeinfo 的資料
     ti = type_new(info);
-    
-    type_table_add(ti);
+
+//    type_table_add(ti);
     return ti;
 }
 
-TypeImpl *type_register(const TypeInfo *info)
-{
-    return type_register_internal(info);
-}
 
 
 TypeImpl *type_register_static(const TypeInfo *info)
 {
     return type_register(info);
 }
+
+TypeImpl *type_register(const TypeInfo *info)
+{
+	return type_register_internal(info);
+}
+
+

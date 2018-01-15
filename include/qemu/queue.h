@@ -88,13 +88,11 @@ struct {                                                                	\
  * 這樣簡單的 *(head) -> last 代表的意思就是 elm 的 next pointer。
  */
 #define QTAILQ_INSERT_TAIL(head, elm, field) do {	\
-	// 以下兩項只是單純的設定 elm 的 tqe_next 和 tqe_prev
-	(elm)->field.tqe_next = NULL;                                   \
-	(elm)->field.tqe_prev = (head)->tqh_last;                       \
-	// 讓原本的 last element 指向新的 element
-	*(head)->tqh_last = (elm);                                      \
-	// 一般會讓 tqh_last 指向 elm 物件，但是在此卻反而指派 elm->next 的位址給 tqh_last，如此可以經由 *(head)->tqh_last 方式去控制 (elm)->field.tqe_next
-	(head)->tqh_last = &(elm)->field.tqe_next;     \
+	(elm)->field.tqe_next = NULL;                    /* 以下兩項只是單純的設定 elm 的 tqe_next 和 tqe_prev */            			\
+	(elm)->field.tqe_prev = (head)->tqh_last;            	           															\
+	*(head)->tqh_last = (elm);                    /* 讓原本的 last element 指向新的 element */             							\
+	(head)->tqh_last = &(elm)->field.tqe_next;    /* 一般會讓 tqh_last 指向 elm 物件，但是在此卻反而指派 elm->next 的位址給 tqh_last，
+													 如此可以經由 *(head)->tqh_last 方式去控制 (elm)->field.tqe_next */ 				\
 } while (/*CONSTCOND*/0)
 
 
