@@ -45,7 +45,7 @@ static void vmxnet3_register_types(void)
 {
     printf("vmxnet3_register_types called...\n");
 	
-	// 註冊 type 種類 vmxnet3_info 到系統內，在此時會把 vmxnet3_info 轉成 object 的方式去儲存。
+    // 註冊 type 種類 vmxnet3_info 到系統內，在此時會把 vmxnet3_info 轉成 object 的方式去儲存。
     // 之後要操作上面定義的 instance_init, class_init 會藉由 type_table_lookup 和 type_table_add
     // 被定義在 object.c 內去操作。
     type_register_static(&vmxnet3_info);
