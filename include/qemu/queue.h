@@ -101,3 +101,9 @@ struct {                                                                	\
 } while (/*CONSTCOND*/0)
 
 
+#define QTAILQ_FOREACH(var, head, field)                                \
+        for ((var) = ((head)->tqh_first);                               \
+                (var);                                                  \
+                (var) = ((var)->field.tqe_next))
+
+

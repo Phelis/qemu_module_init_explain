@@ -1,8 +1,11 @@
+/*
+ * QEMU Module Infrastructure
+ */
+
 #include <stdio.h>
 #include "../include/qemu/module.h"
 #include "../include/qemu/queue.h"
-// 初始化裝置 function pointer
-void (*init)(void);
+
 
 typedef struct ModuleEntry
 {
@@ -11,19 +14,22 @@ typedef struct ModuleEntry
 	module_init_type type;
 } ModuleEntry;
 
-// 創立第一個 head
+// 建立一個 head structure 有 tqh_first 和 tqh_last 沒有 qualifier, type 為 ModuleEntry
 typedef QTAILQ_HEAD(, ModuleEntry) ModuleTypeList;
 
+// 根據定義在檔案 module.c 在 enum 內，自動被 assign 一個 number
 static ModuleTypeList init_type_list[MODULE_INIT_MAX];
 
 static ModuleTypeList dso_init_list;
 
 static void init_lists(void)
 {
-	// 判斷是否已經初始化
+	// 判斷是否已經初始化，加入 static 代表的意義不同，變成 global
 	static int inited;
 	int i;
 	
+    // 不管呼叫多少次，在此只會執行一次，因為 inited 是被寫入 heap memory 而非 stack
+    // 採用 user process 的 4G 去看 inited 位址， why?
 	if (inited) {
 		return;
 	}
@@ -60,9 +66,6 @@ void register_module_init(void (*fn)(void), module_init_type type)
 	l = find_type(type);
 	
 	QTAILQ_INSERT_TAIL(l, e, node);
-
-	// 更動一下流程方便說明，這裡我們直接做
-	init = fn;
 }
 
 // universal 的 module initialization function
@@ -71,6 +74,13 @@ void module_call_init(module_init_type type)
 	printf("module_call_init\n");
 	
 	// 初始化 vmxnet3
-	init();
+    ModuleTypeList *l;
+    ModuleEntry *e;
+    
+    l = find_type(type);
+    
+    QTAILQ_FOREACH(e, l, node) {
+        e->init();
+    }
 }
 

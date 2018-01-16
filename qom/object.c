@@ -71,17 +71,29 @@ static TypeImpl *type_new(const TypeInfo *info) {
 	
 	/**
 	 * the associated value, or NULL if the key is not found.
-	 * 參考：https://developer.gnome.org/glib/stable/glib-Hash-Tables.html#g-hash-table-lookup
+	 * GLIB-2.0 參考文件：https://developer.gnome.org/glib/stable/glib-Hash-Tables.html#g-hash-table-lookup
 	 */
 	if (type_table_lookup(info->name) != NULL) {
 		printf("Registering `%s' which already exists\n", info->name);
+        
+        return NULL;
 	}
 
+    printf("Registering `%s'\n", info->name);
+    
 	ti->name = g_strdup(info->name);
 	ti->parent = g_strdup(info->parent);
 
+    // instance size, 關係到整個 object 創立空間。
+    ti->instance_size = info->instance_size;
+
+    
+    ti->class_init = info->class_init;
     // ...
     
+    ti->instance_init = info->instance_init;
+    // ...
+
     return ti;
 }
 
@@ -105,6 +117,30 @@ TypeImpl *type_register_static(const TypeInfo *info)
 TypeImpl *type_register(const TypeInfo *info)
 {
 	return type_register_internal(info);
+}
+
+
+static TypeImpl *type_get_by_name(const char *name)
+{
+    if (name == NULL) {
+        return NULL;
+    }
+    
+    return type_table_lookup(name);
+}
+
+// 
+static void object_initialize_with_type(void *data, size_t size, TypeImpl *type)
+{
+    
+}
+
+//
+void object_initialize(void *data, size_t size, const char *typename)
+{
+    TypeImpl *type = type_get_by_name(typename);
+    
+    object_initialize_with_type(data, size, type);
 }
 
 
