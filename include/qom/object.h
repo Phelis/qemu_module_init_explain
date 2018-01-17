@@ -2,11 +2,9 @@
 #define QEMU_OBJECT_H
 
 #include <inttypes.h>
-
+#include <stdbool.h>
 // object 採用 queue.h 內的機制去做收尋
 #include "../qemu/queue.h"
-
-typedef int bool; // or #define bool int
 
 
 struct TypeImpl;
