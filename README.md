@@ -1,4 +1,4 @@
-# qemu_module_init_explain
+# 解釋與實驗 QEMU Open Source
 
 ## 執行和安裝
 1. cd qemu_module_init_explain
