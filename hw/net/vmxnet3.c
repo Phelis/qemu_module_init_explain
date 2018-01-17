@@ -14,13 +14,17 @@ typedef struct {
 	
 } VMXNET3State;
 
-
+/*
+ *
+ */
 static void vmxnet3_instance_init(Object *obj)
 {
 	printf("vmxnet3_instance_init\n");
 
     // 初始化這個物件，會把相關的資料寫入
-//	VMXNET3State *s = VMXNET3(obj);
+    VMXNET3State *s = VMXNET3(obj);
+    
+    
 //	device_add_bootindex_property(obj, &s->conf.bootindex,
 //								  "bootindex", "/ethernet-phy@0",
 //								  DEVICE(obj), NULL);
