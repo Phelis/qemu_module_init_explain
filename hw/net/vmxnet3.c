@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 
+// type info 必須要加的兩個 headers, 1) object.h, 2) module.h
 #include "../../include/qom/object.h"
 #include "../../include/qemu/module.h"
 
@@ -9,10 +10,13 @@
 // 暫時放在這邊, vmxnet3 採用 pci
 #define TYPE_PCI_DEVICE "pci-device"
 
+
 // instance
 typedef struct {
 	
 } VMXNET3State;
+
+#define VMXNET3(obj) OBJECT_CHECK(VMXNET3State, (obj), TYPE_VMXNET3)
 
 /*
  *
@@ -21,8 +25,8 @@ static void vmxnet3_instance_init(Object *obj)
 {
 	printf("vmxnet3_instance_init\n");
 
-    // 初始化這個物件，會把相關的資料寫入
-    VMXNET3State *s = VMXNET3(obj);
+    // 初始化這個物件，會把相關的資料寫入, VMXNET3 做的是 type_check
+//    VMXNET3State *s = VMXNET3(obj);
     
     
 //	device_add_bootindex_property(obj, &s->conf.bootindex,

@@ -78,6 +78,9 @@ struct InterfaceInfo {
 	const char *type;
 };
 
+#define TYPE_INTERFACE "interface"
+
+
 Type type_register(const TypeInfo *info);
 
 Type type_register_static(const TypeInfo *info);
