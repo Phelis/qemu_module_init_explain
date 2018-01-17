@@ -80,8 +80,8 @@ static TypeImpl *type_new(const TypeInfo *info) {
 	}
 
     printf("Registering `%s'\n", info->name);
-    
-	ti->name = g_strdup(info->name);
+
+    ti->name = g_strdup(info->name);
 	ti->parent = g_strdup(info->parent);
 
     // instance size, 關係到整個 object 創立空間。
@@ -93,6 +93,14 @@ static TypeImpl *type_new(const TypeInfo *info) {
     
     ti->instance_init = info->instance_init;
     // ...
+
+    for (i = 0; info->interfaces && info->interfaces[i].type; i++) {
+        ti->interfaces[i].typename = g_strdup(info->interfaces[i].type);
+        
+        printf("interfaces typename[%s]\n", ti->interfaces[i].typename);
+
+    }
+    ti->num_interfaces = i;
 
     return ti;
 }

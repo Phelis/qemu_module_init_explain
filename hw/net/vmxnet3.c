@@ -1,3 +1,5 @@
+#include "../../include/hw/pci/pci.h"
+#include "../../include/hw/pci/pci_bus.h"
 
 #include <stdio.h>
 
@@ -7,19 +9,24 @@
 
 #define TYPE_VMXNET3 "vmxnet3"
 
-// 暫時放在這邊, vmxnet3 採用 pci
-#define TYPE_PCI_DEVICE "pci-device"
+
+typedef struct VMXNET3Class {
+    PCIDeviceClass parent_class;
+//    DeviceRealize parent_dc_realize;
+} VMXNET3Class;
 
 
-// instance
+// VMXNET3State 為系統建構起來後，對於 vmxnet3 所需要的 instance 結構。自己的空間和父類別的空間都會在這裡填滿。
 typedef struct {
-	
+    // 定義在 pci.h，由於 vmxnet3_info 的 parent 為 TYPE_PCI_DEVICE 所以會需要一個 PCIDevice 在 vmxnet3tate 內。
+    PCIDevice parent_obj;
+    // ..
 } VMXNET3State;
 
 #define VMXNET3(obj) OBJECT_CHECK(VMXNET3State, (obj), TYPE_VMXNET3)
 
 /*
- *
+ * 寫入 properties 到 vmxnet3 網路卡內
  */
 static void vmxnet3_instance_init(Object *obj)
 {
@@ -40,13 +47,19 @@ static void vmxnet3_class_init(ObjectClass *class, void *data)
 }
 
 
-// static
+// static const 代表 .name 的值不可以做修改，否則會被編譯器判斷 const-qualified type 錯誤
 static const TypeInfo vmxnet3_info = {
     .name          = TYPE_VMXNET3,
     .parent        = TYPE_PCI_DEVICE,
+    .class_size    = sizeof(VMXNET3Class),
     .instance_size = sizeof(VMXNET3State), // 將被用於 object_new_with_type 去建立物件空間，主要是用 qdev_device_add
     .class_init    = vmxnet3_class_init,
     .instance_init = vmxnet3_instance_init,
+    .interfaces = (InterfaceInfo[]) {
+        { INTERFACE_PCIE_DEVICE },
+        { INTERFACE_CONVENTIONAL_PCI_DEVICE },
+        { }
+    },
 };
 
 static void vmxnet3_register_types(void)

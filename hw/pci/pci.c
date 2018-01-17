@@ -13,10 +13,11 @@ static void pci_bus_class_init(ObjectClass *klass, void *data)
 
 }
 
+
 static const TypeInfo pci_bus_info = {
     .name = TYPE_PCI_BUS,
 //    .parent = TYPE_BUS,
-//    .instance_size = sizeof(PCIBus),
+//    .instance_size = sizeof(PCIBus),      // 定義在 include/qemu/typedefs.h
     .class_size = sizeof(PCIBusClass),
     .class_init = pci_bus_class_init,
 };
