@@ -5,4 +5,6 @@ make:
 
 
 clean:
-	rm ./a.out
+	$(shell find . -name "*gch" | xargs rm 2>&1)
+	$(shell rm ./a.out 2>&1)
+	
