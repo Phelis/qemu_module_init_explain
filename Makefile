@@ -1,7 +1,24 @@
+## Compiler ##
+CC=llvm-gcc
+
+## Header Files ##
+DEPS =./include/hw/pci/pci.h
+DEPS+=./include/hw/pci/pci_bus.h
+DEPS+=./include/qom/object.h
+DEPS+=./include/qemu/module.h
+DEPS+=./include/qemu/queue.h
+
+
+## Object Files ##
+OBJ=./qom/object.c
+OBJ+=./hw/pci/pci.c
+OBJ+=./util/module.c
+OBJ+=./hw/net/vmxnet3.c
+OBJ+=main.c
+
 
 make:
-	llvm-gcc ./include/hw/pci/pci.h ./include/hw/pci/pci_bus.h ./include/qom/object.h ./include/qemu/module.h ./include/qemu/queue.h ./qom/object.c ./hw/pci/pci.c ./util/module.c ./hw/net/vmxnet3.c main.c `pkg-config --cflags --libs glib-2.0`
-
+	$(CC) $(DEPS) $(OBJ) `pkg-config --cflags --libs glib-2.0`
 
 
 clean:
