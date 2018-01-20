@@ -64,7 +64,8 @@ static const TypeInfo vmxnet3_info = {
 
 static void vmxnet3_register_types(void)
 {
-    printf("vmxnet3_register_types called...\n");
+    printf("\n");
+    printf("\033[33mvmxnet3_register_types called...(vmxnet3.c)\033[0m\n");
 	
     // 註冊 type 種類 vmxnet3_info 到系統內，在此時會把 vmxnet3_info 轉成 object 的方式去儲存。
     // 之後要操作上面定義的 instance_init, class_init 會藉由 type_table_lookup 和 type_table_add

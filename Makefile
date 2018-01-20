@@ -7,6 +7,7 @@ DEPS+=./include/hw/pci/pci_bus.h
 DEPS+=./include/qom/object.h
 DEPS+=./include/qemu/module.h
 DEPS+=./include/qemu/queue.h
+DEPS+=./include/qemu/typedefs.h
 
 
 ## Object Files ##
@@ -14,6 +15,7 @@ OBJ=./qom/object.c
 OBJ+=./hw/pci/pci.c
 OBJ+=./util/module.c
 OBJ+=./hw/net/vmxnet3.c
+OBJ+=./hw/core/qdev.c
 OBJ+=main.c
 
 

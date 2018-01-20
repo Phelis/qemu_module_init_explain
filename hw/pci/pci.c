@@ -6,6 +6,12 @@
 #include "../../include/qom/object.h"
 #include "../../include/qemu/module.h"
 
+// 不應該放在這邊?
+#include "../../include/hw/qdev-core.h"
+
+
+// qdev-core
+#define TYPE_DEVICE "device"
 
 static void pci_bus_class_init(ObjectClass *klass, void *data)
 {
@@ -16,8 +22,8 @@ static void pci_bus_class_init(ObjectClass *klass, void *data)
 
 static const TypeInfo pci_bus_info = {
     .name = TYPE_PCI_BUS,
-//    .parent = TYPE_BUS,
-//    .instance_size = sizeof(PCIBus),      // 定義在 include/qemu/typedefs.h
+    .parent = TYPE_BUS,
+    .instance_size = sizeof(PCIBus),      // 定義在 include/qemu/typedefs.h
     .class_size = sizeof(PCIBusClass),
     .class_init = pci_bus_class_init,
 };
@@ -39,7 +45,7 @@ static void pci_device_class_base_init(ObjectClass *klass, void *data)
 
 static const TypeInfo pci_device_type_info = {
     .name = TYPE_PCI_DEVICE,
-//    .parent = TYPE_DEVICE,
+    .parent = TYPE_DEVICE,
     .instance_size = sizeof(PCIDevice),
     .abstract = true,
     .class_size = sizeof(PCIDeviceClass),
@@ -59,7 +65,8 @@ static const TypeInfo conventional_pci_interface_info = {
 
 static void pci_register_types(void)
 {
-    printf("pci_register_types called...\n");
+    printf("\n");
+    printf("\033[33mpci_register_types called...(pci.c)\033[0m\n");
 
     type_register_static(&pci_bus_info);
     type_register_static(&pcie_bus_info);
