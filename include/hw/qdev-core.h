@@ -3,11 +3,13 @@
 
 //
 #include "../qemu/typedefs.h"
-
+#include "../qom/object.h"		// OBJECT_CLASS_CHECK 定義在此，只要有關 Object 。
 // 基本的 device
 #define TYPE_DEVICE "device"
 
 #define DEVICE_CLASS(klass) OBJECT_CLASS_CHECK(DeviceClass, (klass), TYPE_DEVICE)
+#define DEVICE_GET_CLASS(obj) OBJECT_GET_CLASS(DeviceClass, (obj), TYPE_DEVICE)
+
 typedef enum DeviceCategory {
 	DEVICE_CATEGORY_BRIDGE,
 	DEVICE_CATEGORY_USB,

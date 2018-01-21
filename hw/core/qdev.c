@@ -29,7 +29,7 @@ static void device_class_base_init(ObjectClass *class, void *data)
 {
 	printf("device_class_base_init\n");
 
-//	DeviceClass *klass = DEVICE_CLASS(class);
+	DeviceClass *klass = DEVICE_CLASS(class);
 	
 	/* We explicitly look up properties in the superclasses,
 	 * so do not propagate them to the subclasses.
@@ -41,7 +41,8 @@ static void device_class_init(ObjectClass *class, void *data)
 {
 	printf("device_class_init\n");
 	
-//	DeviceClass *dc = DEVICE_CLASS(class);
+	// 將原本的 object class 轉換成 device class
+	DeviceClass *dc = DEVICE_CLASS(class);
 	
 //	class->unparent = device_unparent;
 //	dc->realize = device_realize;
@@ -53,10 +54,11 @@ static void device_class_init(ObjectClass *class, void *data)
 //	 * hotpluggable. Devices that shouldn't be hotpluggable,
 //	 * should override it in their class_init()
 //	 */
-//	dc->hotpluggable = true;
-//	dc->user_creatable = true;
+	dc->hotpluggable = true;
+	dc->user_creatable = true;
 }
 
+// 執行起來時的 device instance state 儲存的位置
 typedef struct DeviceState DeviceState;
 
 static const TypeInfo device_type_info = {

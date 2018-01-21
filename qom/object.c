@@ -359,6 +359,81 @@ static void type_initialize(TypeImpl *ti)
 	}
 }
 
+
+ObjectClass *object_class_dynamic_cast(ObjectClass *class,
+									   const char *typename)
+{
+	ObjectClass *ret = NULL;
+	TypeImpl *target_type;
+	TypeImpl *type;
+	
+	if (!class) {
+		return NULL;
+	}
+	
+	/* A simple fast path that can trigger a lot for leaf classes.  */
+	type = class->type;
+	if (type->name == typename) {
+		return class;
+	}
+	
+	target_type = type_get_by_name(typename);
+	if (!target_type) {
+		/* target class type unknown, so fail the cast */
+		return NULL;
+	}
+	
+	if (type->class->interfaces &&
+		type_is_ancestor(target_type, type_interface)) {
+		int found = 0;
+		GSList *i;
+		
+		for (i = class->interfaces; i; i = i->next) {
+			ObjectClass *target_class = i->data;
+			
+			if (type_is_ancestor(target_class->type, target_type)) {
+				ret = target_class;
+				found++;
+			}
+		}
+		
+		/* The match was ambiguous, don't allow a cast */
+		if (found > 1) {
+			ret = NULL;
+		}
+	} else if (type_is_ancestor(type, target_type)) {
+		ret = class;
+	}
+	
+	return ret;
+}
+
+
+ObjectClass *object_class_dynamic_cast_assert(ObjectClass *class,
+											  const char *typename,
+											  const char *file, int line,
+											  const char *func)
+{
+	ObjectClass *ret;
+
+	
+	if (!class || !class->interfaces) {
+		return class;
+	}
+	
+	ret = object_class_dynamic_cast(class, typename);
+	if (!ret && class) {
+		fprintf(stderr, "%s:%d:%s: Object %p is not an instance of type %s\n",
+				file, line, func, class, typename);
+		abort();
+	}
+	
+out:
+	return ret;
+
+}
+
+
 static void object_instance_init(Object *obj)
 {
 	printf("object_instance_init\n");
