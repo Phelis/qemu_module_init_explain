@@ -22,8 +22,7 @@
 
 static void pci_bus_class_init(ObjectClass *klass, void *data)
 {
-    printf("pci_bus_class_init\n");
-
+	printf("pci_bus_class_init\n");
 }
 
 
@@ -52,12 +51,14 @@ static void pci_device_class_base_init(ObjectClass *klass, void *data)
     printf("pci_device_class_base_init\n");
 }
 
-
+// 定義 parent 為 interface, 又 TYPE_INTERFACE 被定義在 object.h
 static const TypeInfo pcie_interface_info = {
     .name          = INTERFACE_PCIE_DEVICE,     // 定義在 pci.h 內
     .parent        = TYPE_INTERFACE,            // 定義在 object.h 內
 };
 
+
+// 定義 parent 為 interface, 又 TYPE_INTERFACE 被定義在 object.h
 static const TypeInfo conventional_pci_interface_info = {
     .name          = INTERFACE_CONVENTIONAL_PCI_DEVICE,     // 定義在 pci.h 內
     .parent        = TYPE_INTERFACE,                        // 定義在 object.h 內

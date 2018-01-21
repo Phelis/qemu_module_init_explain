@@ -1,3 +1,7 @@
+/*
+ * 目前看來在每一個 TypeInfo 檔案內，只會幫忙填寫需要的資料
+ */
+
 #include "../../include/hw/pci/pci.h"
 #include "../../include/hw/pci/pci_bus.h"
 
@@ -6,13 +10,17 @@
 // type info 必須要加的兩個 headers, 1) object.h, 2) module.h
 #include "../../include/qom/object.h"
 #include "../../include/qemu/module.h"
+#include "../../include/hw/qdev-core.h"
 
 #define TYPE_VMXNET3 "vmxnet3"
+
+#define VMXNET3_DEVICE_CLASS(klass) \
+	OBJECT_CLASS_CHECK(VMXNET3Class, (klass), TYPE_VMXNET3)
 
 
 typedef struct VMXNET3Class {
     PCIDeviceClass parent_class;
-//    DeviceRealize parent_dc_realize;
+    DeviceRealize parent_dc_realize;
 } VMXNET3Class;
 
 
@@ -41,9 +49,16 @@ static void vmxnet3_instance_init(Object *obj)
 //								  DEVICE(obj), NULL);
 }
 
+
 static void vmxnet3_class_init(ObjectClass *class, void *data)
 {
-	printf("vmxnet3_class_init\n");
+	printf("vmxnet3_class_init %p\n", class);
+
+	DeviceClass *dc = DEVICE_CLASS(class);
+	PCIDeviceClass *c = PCI_DEVICE_CLASS(class);
+	VMXNET3Class *vc = VMXNET3_DEVICE_CLASS(class);		// 空間夠
+	printf("vmxnet3_class_init %p\n", c);
+
 }
 
 

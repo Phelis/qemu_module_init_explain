@@ -22,6 +22,8 @@ typedef enum DeviceCategory {
 	DEVICE_CATEGORY_MAX
 } DeviceCategory;
 
+// 偷偷改成 GError，這裡利用 typedef 去定義 function
+typedef void (*DeviceRealize)(DeviceState *dev, GError **errp);
 
 // 採用 static 讓有引用這個 header 的檔案才能看到這個檔案，其他檔案看不到。否則再多 object 檔案下會出錯誤。
 // inline 可以讓引用這函數的地方直接替換，減少 linking。畢竟是 header file 又加入 static。
@@ -68,7 +70,7 @@ typedef struct DeviceClass {
 //
 //	/* callbacks */
 //	void (*reset)(DeviceState *dev);
-//	DeviceRealize realize;
+	DeviceRealize realize;
 //	DeviceUnrealize unrealize;
 //
 //	/* device state */
@@ -84,7 +86,14 @@ struct DeviceState {
 	/*< private >*/
 	Object parent_obj;
 	/*< public >*/
+	
+	const char *id;
+	bool realized;
+	bool pending_deleted_event;
 };
+
+
+//typedef struct DeviceState DeviceState;
 
 
 // 基本的 bus

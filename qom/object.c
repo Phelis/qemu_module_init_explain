@@ -85,9 +85,10 @@ static TypeImpl *type_new(const TypeInfo *info) {
     TypeImpl *ti = g_malloc0(sizeof(*ti));
 	int i;
 	
-	/**
+	/*
 	 * the associated value, or NULL if the key is not found.
-	 * GLIB-2.0 參考文件：https://developer.gnome.org/glib/stable/glib-Hash-Tables.html#g-hash-table-lookup
+	 * GLIB-2.0 參考文件：
+	 * 		https://developer.gnome.org/glib/stable/glib-Hash-Tables.html#g-hash-table-lookup
 	 */
 	if (type_table_lookup(info->name) != NULL) {
 		printf("Registering `%s' which already exists\n", info->name);
@@ -99,15 +100,23 @@ static TypeImpl *type_new(const TypeInfo *info) {
     ti->name = g_strdup(info->name);
 	ti->parent = g_strdup(info->parent);
 
-    // instance size, 關係到整個 object 創立空間。
-    ti->instance_size = info->instance_size;
+	// class size 和 instance_size 關係到創立空間 malloc。
+	ti->class_size = info->class_size;
+	ti->instance_size = info->instance_size;
 
-    
+	
+	// 把 TypeInfo 的 functions 全部複製
     ti->class_init = info->class_init;
-    // ...
-    
+	ti->class_base_init = info->class_base_init;
+	ti->class_finalize = info->class_finalize;
+	ti->class_data = info->class_data;
+
+	// 複製 functions, 例如：instance_init, instance_post_init, instance_finalize
     ti->instance_init = info->instance_init;
-    // ...
+	ti->instance_post_init = info->instance_post_init;
+	ti->instance_finalize = info->instance_finalize;
+
+	ti->abstract = info->abstract;
 
     for (i = 0; info->interfaces && info->interfaces[i].type; i++) {
         ti->interfaces[i].typename = g_strdup(info->interfaces[i].type);
@@ -134,6 +143,7 @@ static TypeImpl *type_get_by_name(const char *name)
 static TypeImpl *type_register_internal(const TypeInfo *info)
 {
     TypeImpl *ti;
+	
     // 會把 typeinfo 的資料
     ti = type_new(info);
 
@@ -161,7 +171,9 @@ TypeImpl *type_register(const TypeInfo *info)
 }
 
 
-
+/*
+ * 找尋 typeinfo 的資料
+ */
 static TypeImpl *type_get_parent(TypeImpl *type)
 {
 	if (!type->parent_type && type->parent) {
@@ -189,7 +201,6 @@ static size_t type_class_get_size(TypeImpl *ti)
 	if (type_has_parent(ti)) {
 		return type_class_get_size(type_get_parent(ti));
 	}
-	
 	return sizeof(ObjectClass);
 }
 
@@ -285,7 +296,7 @@ static void type_initialize(TypeImpl *ti)
 		return;
 	}
 
-
+	// type initialize 才會把 class_size 寫入 TypeImpl 內。
 	ti->class_size = type_class_get_size(ti);
 	ti->instance_size = type_object_get_size(ti);
 	/* Any type with zero instance_size is implicitly abstract.
@@ -295,12 +306,18 @@ static void type_initialize(TypeImpl *ti)
 		ti->abstract = true;
 	}
 	
+	printf("\033[34mmalloc for %s ,class addr %p\033[0m\n", ti->name, ti->class);
 	ti->class = g_malloc0(ti->class_size);
+	printf("malloc for %s, class addr %p\n", ti->name, ti->class);
 	
 	parent = type_get_parent(ti);
-	
+	if (parent)
+		printf("malloc for %s ,class addr %p\n", ti->name, parent->class);
+
 
 	if (parent) {
+		printf("\n");
+
 		type_initialize(parent);
 		GSList *e;
 		int i;
@@ -319,6 +336,7 @@ static void type_initialize(TypeImpl *ti)
 		}
 
 		for (i = 0; i < ti->num_interfaces; i++) {
+			
 			TypeImpl *t = type_get_by_name(ti->interfaces[i].typename);
 			for (e = ti->class->interfaces; e; e = e->next) {
 
@@ -333,6 +351,9 @@ static void type_initialize(TypeImpl *ti)
 			if (e) {
 				continue;
 			}
+			printf("\n");
+			printf("已經註冊 type_initialize_interface \n");
+
 			type_initialize_interface(ti, t, t);
 		}
 		
@@ -341,8 +362,7 @@ static void type_initialize(TypeImpl *ti)
 		}
 
 	} else {
-		ti->class->properties = g_hash_table_new_full(
-													  g_str_hash, g_str_equal, g_free, object_property_free);
+		ti->class->properties = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, object_property_free);
 	}
 	
 	ti->class->type = ti;
@@ -354,6 +374,7 @@ static void type_initialize(TypeImpl *ti)
 		parent = type_get_parent(parent);
 	}
 	
+	// 呼叫 class_init 註冊在每一個 TypeInfo 內
 	if (ti->class_init) {
 		ti->class_init(ti->class, ti->class_data);
 	}
@@ -368,6 +389,7 @@ ObjectClass *object_class_dynamic_cast(ObjectClass *class,
 	TypeImpl *type;
 	
 	if (!class) {
+		
 		return NULL;
 	}
 	
@@ -376,7 +398,7 @@ ObjectClass *object_class_dynamic_cast(ObjectClass *class,
 	if (type->name == typename) {
 		return class;
 	}
-	
+
 	target_type = type_get_by_name(typename);
 	if (!target_type) {
 		/* target class type unknown, so fail the cast */
@@ -385,6 +407,7 @@ ObjectClass *object_class_dynamic_cast(ObjectClass *class,
 	
 	if (type->class->interfaces &&
 		type_is_ancestor(target_type, type_interface)) {
+
 		int found = 0;
 		GSList *i;
 		
@@ -402,6 +425,7 @@ ObjectClass *object_class_dynamic_cast(ObjectClass *class,
 			ret = NULL;
 		}
 	} else if (type_is_ancestor(type, target_type)) {
+		
 		ret = class;
 	}
 	
