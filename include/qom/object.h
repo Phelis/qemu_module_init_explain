@@ -6,6 +6,7 @@
 // object 採用 queue.h 內的機制去做收尋
 #include "../qemu/queue.h"
 
+#define TYPE_OBJECT "object"
 
 struct TypeImpl;
 typedef struct TypeImpl *Type;
@@ -74,9 +75,57 @@ struct TypeInfo {
     InterfaceInfo *interfaces;
 };
 
+
+#define OBJECT_CLASS_CHECK(class_type, class, name) \
+	((class_type *)object_class_dynamic_cast_assert(OBJECT_CLASS(class), (name), \
+			__FILE__, __LINE__, __func__))
+
+
+#define OBJECT_GET_CLASS(class, obj, name) \
+	OBJECT_CLASS_CHECK(class, object_get_class(OBJECT(obj)), name)
+
+/**
+ * OBJECT_CLASS:
+ * @class: A derivative of #ObjectClass.
+ *
+ * Converts a class to an #ObjectClass.  Since all objects are #Objects,
+ * this function will always succeed.
+ */
+#define OBJECT_CLASS(class) \
+		((ObjectClass *)(class))
+
+/**
+ * InterfaceInfo:
+ * @type: The name of the interface.
+ *
+ * The information associated with an interface.
+ */
 struct InterfaceInfo {
 	const char *type;
 };
+
+/**
+ * InterfaceClass:
+ * @parent_class: the base class
+ *
+ * The class for all interfaces.  Subclasses of this class should only add
+ * virtual methods.
+ */
+struct InterfaceClass
+{
+	ObjectClass parent_class;
+	/*< private >*/
+	ObjectClass *concrete_class;
+	Type interface_type;
+};
+
+
+ObjectClass *object_class_dynamic_cast_assert(ObjectClass *klass,
+											  const char *typename,
+											  const char *file, int line,
+											  const char *func);
+
+
 
 #define TYPE_INTERFACE "interface"
 

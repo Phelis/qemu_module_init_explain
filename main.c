@@ -6,11 +6,11 @@
 
 // 主要的運行程式碼
 int main(){
-	
-	printf("主程式 main()\n");
-	
-	module_call_init(MODULE_INIT_QOM);
+	printf("\n");
+	printf("\033[33mmain...(main.c)\033[0m\n");
 
+	module_call_init(MODULE_INIT_QOM);
+	
     return 0;
 }
 
