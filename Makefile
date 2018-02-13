@@ -7,6 +7,8 @@ DEPS+=./include/hw/pci/pci_bus.h
 DEPS+=./include/qom/object.h
 DEPS+=./include/qemu/module.h
 DEPS+=./include/qemu/queue.h
+DEPS+=./include/qemu/thread-posix.h
+
 
 
 ## Object Files ##
